@@ -1,7 +1,8 @@
 import { PluginConfig } from './type';
 
 export abstract class Plugin {
-  public cfg: PluginConfig;
+  cfg: PluginConfig;
+  type: string;
 
   constructor(cfg: PluginConfig) {
     this.cfg = cfg;
