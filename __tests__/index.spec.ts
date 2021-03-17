@@ -1,33 +1,31 @@
 import * as unified from 'unified';
 import * as markdown from 'remark-parse';
-
 import { Ast, Plugin } from '../src/';
 import { setGlobalConfig, getGlobalConfig } from '../src/global';
 import { TestPlugin } from './TestPlugin';
 
-const throwErrFn = () => undefined;
-
-const plugin1 = new TestPlugin({
-  throwError: throwErrFn,
-  config: {
-    name: 'p1'
-  }
-});
-
-const plugin2 = new TestPlugin({
-  throwError: throwErrFn,
-  config: {
-    name: 'p2'
-  }
-});
-
 describe('index', () => {
+
   test('exports', () => {
     expect(Ast).not.toBe(undefined);
     expect(Plugin).not.toBe(undefined);
   });
 
   test('Ast', () => {
+    let throwErrFn = jest.fn();
+    const plugin1 = new TestPlugin({
+      throwError: throwErrFn,
+      config: {
+        name: 'p1'
+      }
+    });
+
+    const plugin2 = new TestPlugin({
+      throwError: throwErrFn,
+      config: {
+        name: 'p2'
+      }
+    });
     expect(plugin1.cfg).toStrictEqual({
       'config': {
         'name': 'p1'
@@ -103,6 +101,24 @@ const b = 2;
     ast = new Ast(mdAst, undefined, md);
 
     expect(ast.get('children.0.children.0').segment()).toBe('Hello **world**!');
+  });
+
+  test('throwError call', () => {
+    const throwErrFn = jest.fn();
+    const testErrorPlugin = new TestPlugin({
+      throwError: throwErrFn
+    });
+    const md = 'bad content that break some rules...';
+    let mdAst = unified()
+      .use(markdown)
+      .parse(md);
+
+    const ast = new Ast(mdAst, undefined, md);
+    ast.traverse([testErrorPlugin, testErrorPlugin]);
+    expect(throwErrFn).toBeCalledTimes(2);
+    expect(throwErrFn).toBeCalledWith({
+      'name': 'Hello, I threw an exception!'
+    });
   });
 
   test('global configure', () => {
