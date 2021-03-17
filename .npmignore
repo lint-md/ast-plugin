@@ -1,6 +1,5 @@
 .gitignore
 .travis.yml
-.babelrc
 .idea
 
 __tests__
