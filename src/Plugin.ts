@@ -7,9 +7,9 @@ export abstract class Plugin {
     this.cfg = cfg;
   }
 
-  abstract pre();
+  abstract pre(): void;
 
-  abstract visitor();
+  abstract visitor(): any;
 
-  abstract post();
+  abstract post(): void;
 }

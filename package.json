@@ -3,6 +3,7 @@
   "version": "0.0.7",
   "description": "The simplest abstract syntax tree walker.",
   "main": "lib/index.js",
+  "module": "esm/index.js",
   "scripts": {
     "test": "jest --no-cache",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
@@ -21,6 +22,10 @@
   ],
   "author": "hustcc",
   "license": "MIT",
+  "files": [
+    "lib",
+    "esm"
+  ],
   "bugs": {
     "url": "https://github.com/hustcc/ast-plugin/issues"
   },
