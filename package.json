@@ -6,14 +6,12 @@
   "module": "esm/index.js",
   "scripts": {
     "test": "jest --no-cache",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lib:cjs": "tsc -p tsconfig.json --target ES5 --module commonjs --outDir lib",
-    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm",
-    "start": "tsc -w"
+    "lib:esm": "tsc -p tsconfig.json --target ES5 --module ESNext --outDir esm"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hustcc/ast-plugin.git"
+    "url": "git+https://github.com/lint-md/ast-plugin.git"
   },
   "keywords": [
     "ast",
@@ -24,15 +22,15 @@
   "license": "MIT",
   "files": [
     "lib",
-    "esm"
+    "esm",
+    "src"
   ],
   "bugs": {
-    "url": "https://github.com/hustcc/ast-plugin/issues"
+    "url": "https://github.com/lint-md/ast-plugin/issues"
   },
-  "homepage": "https://github.com/hustcc/ast-plugin#readme",
+  "homepage": "https://github.com/lint-md/ast-plugin#readme",
   "devDependencies": {
     "@types/jest": "^26.0.20",
-    "coveralls": "^3.0.2",
     "jest": "^26.6.3",
     "remark-parse": "^6.0.2",
     "rimraf": "^2.6.2",
