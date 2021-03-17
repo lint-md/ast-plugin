@@ -1,12 +1,25 @@
-import unified from 'unified';
-import markdown from 'remark-parse';
+import * as unified from 'unified';
+import * as markdown from 'remark-parse';
 
 import { Ast, Plugin } from '../src/';
 import { setGlobalConfig, getGlobalConfig } from '../src/global';
 import { TestPlugin } from './TestPlugin';
 
-const plugin1 = new TestPlugin('p1');
-const plugin2 = new TestPlugin('p2');
+const throwErrFn = () => undefined;
+
+const plugin1 = new TestPlugin({
+  throwError: throwErrFn,
+  config: {
+    name: 'p1'
+  }
+});
+
+const plugin2 = new TestPlugin({
+  throwError: throwErrFn,
+  config: {
+    name: 'p2'
+  }
+});
 
 describe('index', () => {
   test('exports', () => {
@@ -15,8 +28,18 @@ describe('index', () => {
   });
 
   test('Ast', () => {
-    expect(plugin1.cfg).toBe('p1');
-    expect(plugin2.cfg).toBe('p2');
+    expect(plugin1.cfg).toStrictEqual({
+      'config': {
+        'name': 'p1'
+      },
+      'throwError': throwErrFn
+    });
+    expect(plugin2.cfg).toStrictEqual({
+      'config': {
+        'name': 'p2'
+      },
+      'throwError': throwErrFn
+    });
 
     const ast = unified()
       .use(markdown)
@@ -24,7 +47,7 @@ describe('index', () => {
 
     const plugins = [
       plugin1,
-      plugin2,
+      plugin2
     ];
 
     new Ast(ast).traverse(plugins);
@@ -62,22 +85,22 @@ cont a = 1;
 const b = 2;
 \`\`\``;
 
-    let ast = unified()
+    let mdAst = unified()
       .use(markdown)
       .parse(md);
 
-    ast = new Ast(ast, undefined, md);
+    let ast = new Ast(mdAst, undefined, md);
 
     const code = ast.get('children.0');
 
     expect(code.segment()).toBe(md);
 
     md = '> Hello **world**!';
-    ast = unified()
+    mdAst = unified()
       .use(markdown)
       .parse(md);
 
-    ast = new Ast(ast, undefined, md);
+    ast = new Ast(mdAst, undefined, md);
 
     expect(ast.get('children.0.children.0').segment()).toBe('Hello **world**!');
   });

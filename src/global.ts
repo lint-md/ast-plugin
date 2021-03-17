@@ -1,6 +1,6 @@
 let GlobalConfig = {
   typeKey: 'type',
-  childrenKey: 'children',
+  childrenKey: 'children'
 };
 
 export const setGlobalConfig = config => {

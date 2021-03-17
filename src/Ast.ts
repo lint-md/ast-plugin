@@ -1,20 +1,25 @@
 import { toPath } from './helper';
 import { getGlobalConfig } from './global';
+import * as Unist from 'unist';
+import { Plugin } from './Plugin';
 
 export class Ast {
+  node: Unist.Node;
+  parent: Unist.Node;
+  text: string;
+  skipped: boolean;
 
-  constructor(node, parent, text) {
+  constructor(node: Unist.Node, parent?: Unist.Parent, text?: string) {
     this.node = node;
     this.parent = parent;
     // 文本、代码
     this.text = text;
 
-    this.skiped = false;
+    this.skipped = false;
   }
 
-  get(path) {
+  get(path: string | any[]) {
     const arr = toPath(path);
-
     return arr.reduce((value, key) => {
       if (value === undefined) return undefined;
 
@@ -25,7 +30,7 @@ export class Ast {
   }
 
   // 处理 plugin
-  visit(plugins) {
+  visit(plugins: Plugin[]) {
     const { typeKey, childrenKey } = getGlobalConfig();
     const node = this.node;
 
@@ -44,7 +49,7 @@ export class Ast {
     });
   }
 
-  process(plugins) {
+  process(plugins: Plugin[]) {
     const { typeKey, childrenKey } = getGlobalConfig();
 
     const children = this.node[childrenKey];
@@ -53,12 +58,12 @@ export class Ast {
     this.visit(plugins);
 
     // 处理子元素
-    if (Array.isArray(children) && !this.skiped) {
-      children.forEach(child => new Ast(child, this, this.text).process(plugins));
+    if (Array.isArray(children) && !this.skipped) {
+      children.forEach(child => new Ast(child, undefined, this.text).process(plugins));
     }
   }
 
-  traverse(plugins) {
+  traverse(plugins: Plugin[]) {
     // 前置处理
     plugins.forEach(plugin => plugin.pre());
 
@@ -72,11 +77,12 @@ export class Ast {
   }
 
   skip() {
-    this.skiped = true;
+    this.skipped = true;
   }
 
   /**
    * 获得当前 ast 的文本内容片段
+   *
    * @returns {string}
    */
   segment() {
@@ -84,8 +90,8 @@ export class Ast {
 
     const { start, end } = this.node.position;
 
-    const r = [];
-    for (let i = start.line; i <= end.line; i ++) {
+    const r: string[] = [];
+    for (let i = start.line; i <= end.line; i++) {
       let line = lines[i - 1];
 
       if (i === end.line) {
@@ -93,7 +99,7 @@ export class Ast {
       }
 
       if (i === start.line) {
-        line = line.substring(start.column - 1)
+        line = line.substring(start.column - 1);
       }
 
       r.push(line);
