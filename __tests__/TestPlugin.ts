@@ -13,6 +13,9 @@ export class TestPlugin extends Plugin {
     return {
       text: ast => {
         this.do(ast);
+        this.cfg.throwError({
+          name: 'Hello, I threw an exception!'
+        });
       },
       heading: ast => {
         this.doHeading(ast);

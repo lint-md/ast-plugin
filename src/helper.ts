@@ -1,4 +1,4 @@
-export const toPath = path =>
+export const toPath = (path: string | any[]) =>
   typeof path === 'string' ?
     path.replace(/(\[\d+\])/g, s => `.${s.slice(1, -1)}`) // [0] -> .0
       .split('.') :
