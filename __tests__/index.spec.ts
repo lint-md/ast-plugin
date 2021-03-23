@@ -133,9 +133,29 @@ const b = 2;
     const a = unified()
       .use(markdown)
       .parse('Hello **world**!');
-    const ast = new Ast(a);
-    const children = ast.node.children[0].children;
-    expect(children.length).toStrictEqual(3);
-    expect(children[0].value).toStrictEqual('Hello ');
+
+    const mock = jest.fn((ast: Ast) => {
+      expect(ast.parent.node.type).toStrictEqual('paragraph');
+    });
+
+    class MyPlugin extends Plugin {
+      post(): void {
+      }
+
+      pre(): void {
+      }
+
+      visitor(): any {
+        return {
+          strong: mock
+        };
+      }
+
+    }
+
+    new Ast(a).traverse([new MyPlugin({
+      throwError: undefined
+    })]);
+    expect(mock).toBeCalled()
   });
 });
