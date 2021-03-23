@@ -128,4 +128,14 @@ const b = 2;
 
     expect(getGlobalConfig()).toEqual({ typeKey: 'type' });
   });
+
+  test('should have parent in child ast', () => {
+    const a = unified()
+      .use(markdown)
+      .parse('Hello **world**!');
+    const ast = new Ast(a);
+    const children = ast.node.children[0].children;
+    expect(children.length).toStrictEqual(3);
+    expect(children[0].value).toStrictEqual('Hello ');
+  });
 });
