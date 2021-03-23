@@ -5,11 +5,11 @@ import { Plugin } from './Plugin';
 
 export class Ast {
   node: Unist.Node;
-  parent: Unist.Node;
+  parent: Ast;
   text: string;
   skipped: boolean;
 
-  constructor(node: Unist.Node, parent?: Unist.Parent, text?: string) {
+  constructor(node: Unist.Node, parent?: Ast, text?: string) {
     this.node = node;
     this.parent = parent;
     // 文本、代码
@@ -59,7 +59,7 @@ export class Ast {
 
     // 处理子元素
     if (Array.isArray(children) && !this.skipped) {
-      children.forEach(child => new Ast(child, undefined, this.text).process(plugins));
+      children.forEach(child => new Ast(child, this, this.text).process(plugins));
     }
   }
 

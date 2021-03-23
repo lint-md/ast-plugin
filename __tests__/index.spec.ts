@@ -1,11 +1,10 @@
 import * as unified from 'unified';
 import * as markdown from 'remark-parse';
-import { Ast, Plugin } from '../src/';
+import { Ast, Plugin } from '../src';
 import { setGlobalConfig, getGlobalConfig } from '../src/global';
 import { TestPlugin } from './TestPlugin';
 
 describe('index', () => {
-
   test('exports', () => {
     expect(Ast).not.toBe(undefined);
     expect(Plugin).not.toBe(undefined);
@@ -65,6 +64,7 @@ describe('index', () => {
     expect(plugin2.doDelete).toHaveBeenCalledTimes(0);
   });
 
+
   test('get', () => {
     const ast = unified()
       .use(markdown)
@@ -76,6 +76,7 @@ describe('index', () => {
     expect(new Ast(ast).get('children[0].children[0].children[0]').node.type).toBe('text');
     expect(new Ast(ast).get('aaa.bbb')).toBe(undefined);
   });
+
 
   test('segment', () => {
     let md = `\`\`\`js
@@ -103,6 +104,7 @@ const b = 2;
     expect(ast.get('children.0.children.0').segment()).toBe('Hello **world**!');
   });
 
+
   test('throwError call', () => {
     const throwErrFn = jest.fn();
     const testErrorPlugin = new TestPlugin({
@@ -121,11 +123,49 @@ const b = 2;
     });
   });
 
+
   test('global configure', () => {
     expect(getGlobalConfig()).toEqual({ typeKey: 'type', childrenKey: 'children' });
 
     setGlobalConfig({ typeKey: 'type' });
 
     expect(getGlobalConfig()).toEqual({ typeKey: 'type' });
+
+    // 上述操作有副作用，会影响下面的 tests, 需要重新复原
+    setGlobalConfig({ typeKey: 'type', childrenKey: 'children' });
+    expect(getGlobalConfig()).toEqual({ typeKey: 'type', childrenKey: 'children' });
+  });
+
+  test('should have parent in child ast', () => {
+    const mock = jest.fn((ast: Ast) => {
+      expect(ast.parent.node.type).toStrictEqual('paragraph');
+    });
+
+    class MyPlugin extends Plugin {
+      post(): void {
+      }
+
+      pre(): void {
+      }
+
+      visitor(): any {
+        return {
+          strong: mock
+        };
+      }
+    }
+
+    const a = unified()
+      .use(markdown)
+      .parse('Hello **world**!');
+
+
+    const p = new MyPlugin({
+      throwError: undefined
+    });
+
+    new Ast(a).traverse([p]);
+
+    expect(mock).toBeCalled();
   });
 });
