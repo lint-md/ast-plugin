@@ -1,6 +1,6 @@
+import * as Unist from 'unist';
 import { toPath } from './helper';
 import { getGlobalConfig } from './global';
-import * as Unist from 'unist';
 import { Plugin } from './Plugin';
 
 export class Ast {
